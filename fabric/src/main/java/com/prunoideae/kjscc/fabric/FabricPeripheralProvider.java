@@ -1,5 +1,6 @@
 package com.prunoideae.kjscc.fabric;
 
+import com.prunoideae.kjscc.DynamicPeripheralJS;
 import com.prunoideae.kjscc.PeripheralJS;
 import com.prunoideae.kjscc.PeripheralProviderBase;
 import dan200.computercraft.api.peripheral.IPeripheral;
@@ -20,6 +21,8 @@ public class FabricPeripheralProvider extends PeripheralProviderBase implements 
     @Nullable
     @Override
     public IPeripheral getPeripheral(@NotNull Level world, @NotNull BlockPos pos, @NotNull Direction side) {
-        return (IPeripheral) getPeripheralJS(world.getBlockState(pos)).orElse(null);
+        return getPeripheralJS(world.getBlockState(pos))
+                .map(peripheralJS -> new DynamicPeripheralJS(peripheralJS.getType(), world, pos, side, peripheralJS.getMethods()))
+                .orElse(null);
     }
 }
