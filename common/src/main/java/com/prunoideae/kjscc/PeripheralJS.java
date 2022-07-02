@@ -28,4 +28,9 @@ public class PeripheralJS {
     public List<Pair<String, DynamicPeripheralJS.PeripheralCallback>> getMethods() {
         return methods;
     }
+
+    public PeripheralJS method(String type, DynamicPeripheralJS.PeripheralCallback method) {
+        methods.add(new Pair<>(type, method));
+        return this;
+    }
 }

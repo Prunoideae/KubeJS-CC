@@ -33,3 +33,9 @@ mandatory = true
 versionRange = "[4.4.68,)"
 ordering = "AFTER"
 side = "BOTH"
+
+[[dependencies.kjscc]]
+modId = "computercraft"
+mandatory = true
+ordering = "AFTER"
+side = "BOTH"
