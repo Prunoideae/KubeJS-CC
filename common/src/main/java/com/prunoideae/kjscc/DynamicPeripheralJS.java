@@ -9,7 +9,6 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IDynamicPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.kubejs.util.MapJS;
 import dev.latvian.mods.rhino.NativeArray;
 import dev.latvian.mods.rhino.ScriptableObject;
 import net.minecraft.core.BlockPos;
@@ -85,6 +84,8 @@ public class DynamicPeripheralJS implements IDynamicPeripheral {
 
     @Override
     public boolean equals(@Nullable IPeripheral other) {
-        return false;
+        return other instanceof DynamicPeripheralJS peripheralJS &&
+                peripheralJS.type.equals(type) &&
+                peripheralJS.block.equals(block);
     }
 }
