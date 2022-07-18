@@ -1,6 +1,5 @@
 package com.prunoideae.kjscc;
 
-import com.mojang.datafixers.util.Pair;
 import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -24,28 +23,24 @@ import java.util.Map;
 
 public class DynamicPeripheralJS implements IDynamicPeripheral {
     protected final String[] names;
-    protected final PeripheralCallback[] methods;
+    protected final PeripheralMethod[] methods;
     protected final BlockContainerJS block;
     protected final Direction side;
     protected final String type;
 
     @FunctionalInterface
     public interface PeripheralCallback {
-        Object call(BlockContainerJS block, Direction side, IArguments arguments);
+        Object call(BlockContainerJS block, Direction side, IArguments arguments, IComputerAccess computer, ILuaContext context);
     }
 
-    public DynamicPeripheralJS(String type, Level world, BlockPos pos, Direction side, List<Pair<String, PeripheralCallback>> nameMethods) {
+    public DynamicPeripheralJS(String type, Level world, BlockPos pos, Direction side, List<PeripheralMethod> nameMethods) {
         this.block = new BlockContainerJS(world, pos);
         this.side = side;
         this.type = type;
         List<String> names = new ArrayList<>();
-        List<PeripheralCallback> methods = new ArrayList<>();
-        nameMethods.forEach(pair -> {
-            names.add(pair.getFirst());
-            methods.add(pair.getSecond());
-        });
+        nameMethods.forEach(pair -> names.add(pair.type()));
         this.names = names.toArray(String[]::new);
-        this.methods = methods.toArray(PeripheralCallback[]::new);
+        this.methods = nameMethods.toArray(PeripheralMethod[]::new);
     }
 
     @NotNull
@@ -55,9 +50,14 @@ public class DynamicPeripheralJS implements IDynamicPeripheral {
 
     @NotNull
     @Override
-    public MethodResult callMethod(@NotNull IComputerAccess computer, @NotNull ILuaContext context, int method, @NotNull IArguments arguments) throws LuaException {
+    public final MethodResult callMethod(@NotNull IComputerAccess computer, @NotNull ILuaContext context, int method, @NotNull IArguments arguments) throws LuaException {
         try {
-            return MethodResult.of(jsToLuaType(methods[method].call(block, side, arguments)));
+            PeripheralMethod peripheralMethod = methods[method];
+            if (peripheralMethod.mainThread()) {
+                return context.executeMainThreadTask(() -> new Object[]{peripheralMethod.callback().call(block, side, arguments, computer, context)});
+            } else {
+                return MethodResult.of(jsToLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context)));
+            }
         } catch (Exception e) {
             throw new LuaException(e.getMessage());
         }

@@ -39,3 +39,4 @@ modId = "computercraft"
 mandatory = true
 ordering = "AFTER"
 side = "BOTH"
+versionRange = "[*,)"
