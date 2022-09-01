@@ -1,4 +1,4 @@
-package com.prunoideae.kjscc;
+package com.prunoideae.kjscc.peripheral;
 
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.rhino.util.HideFromJS;

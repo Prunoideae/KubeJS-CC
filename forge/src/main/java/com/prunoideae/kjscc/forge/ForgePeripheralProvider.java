@@ -1,8 +1,8 @@
 package com.prunoideae.kjscc.forge;
 
-import com.prunoideae.kjscc.DynamicPeripheralJS;
-import com.prunoideae.kjscc.PeripheralJS;
-import com.prunoideae.kjscc.PeripheralProviderBase;
+import com.prunoideae.kjscc.peripheral.DynamicPeripheralJS;
+import com.prunoideae.kjscc.peripheral.PeripheralJS;
+import com.prunoideae.kjscc.peripheral.PeripheralProviderBase;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheralProvider;
 import net.minecraft.core.BlockPos;

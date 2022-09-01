@@ -1,5 +1,6 @@
 package com.prunoideae.kjscc;
 
+import com.prunoideae.kjscc.peripheral.PeripheralJS;
 import dev.latvian.mods.kubejs.block.state.BlockStatePredicate;
 import dev.latvian.mods.kubejs.event.EventJS;
 

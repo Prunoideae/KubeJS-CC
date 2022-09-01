@@ -1,5 +1,8 @@
-package com.prunoideae.kjscc;
+package com.prunoideae.kjscc.peripheral;
 
+import com.prunoideae.kjscc.result.IResultJS;
+import com.prunoideae.kjscc.result.MultiResultJS;
+import com.prunoideae.kjscc.result.ResultWrapper;
 import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -16,10 +19,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DynamicPeripheralJS implements IDynamicPeripheral {
     protected final String[] names;
@@ -54,27 +54,16 @@ public class DynamicPeripheralJS implements IDynamicPeripheral {
         try {
             PeripheralMethod peripheralMethod = methods[method];
             if (peripheralMethod.mainThread()) {
-                return context.executeMainThreadTask(() -> new Object[]{peripheralMethod.callback().call(block, side, arguments, computer, context)});
+                return context.executeMainThreadTask(() -> {
+                    IResultJS result = ResultWrapper.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context));
+                    return result instanceof MultiResultJS ? (Object[]) result.getConvertedResult() : new Object[]{result.getConvertedResult()};
+                });
             } else {
-                return MethodResult.of(jsToLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context)));
+                return MethodResult.of(ResultWrapper.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context)).getResult());
             }
         } catch (Exception e) {
             throw new LuaException(e.getMessage());
         }
-    }
-
-    private static Object jsToLuaType(Object o) {
-        if (o instanceof ScriptableObject scriptableObject) {
-            if (o instanceof NativeArray array) {
-                return array.stream().map(DynamicPeripheralJS::jsToLuaType).toArray();
-            }
-            Map<Object, Object> table = new HashMap<>();
-            for (Object key : scriptableObject.getIds()) {
-                table.put(key, jsToLuaType(scriptableObject.get(key)));
-            }
-            return table;
-        }
-        return o;
     }
 
     @NotNull

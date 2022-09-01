@@ -1,5 +1,6 @@
-package com.prunoideae.kjscc;
+package com.prunoideae.kjscc.peripheral;
 
+import com.prunoideae.kjscc.peripheral.PeripheralJS;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
