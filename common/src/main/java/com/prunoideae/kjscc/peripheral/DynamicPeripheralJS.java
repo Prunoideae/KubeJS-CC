@@ -2,7 +2,6 @@ package com.prunoideae.kjscc.peripheral;
 
 import com.prunoideae.kjscc.result.IResultJS;
 import com.prunoideae.kjscc.result.MultiResultJS;
-import com.prunoideae.kjscc.result.ResultWrapper;
 import dan200.computercraft.api.lua.IArguments;
 import dan200.computercraft.api.lua.ILuaContext;
 import dan200.computercraft.api.lua.LuaException;
@@ -11,8 +10,6 @@ import dan200.computercraft.api.peripheral.IComputerAccess;
 import dan200.computercraft.api.peripheral.IDynamicPeripheral;
 import dan200.computercraft.api.peripheral.IPeripheral;
 import dev.latvian.mods.kubejs.level.BlockContainerJS;
-import dev.latvian.mods.rhino.NativeArray;
-import dev.latvian.mods.rhino.ScriptableObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -55,11 +52,11 @@ public class DynamicPeripheralJS implements IDynamicPeripheral {
             PeripheralMethod peripheralMethod = methods[method];
             if (peripheralMethod.mainThread()) {
                 return context.executeMainThreadTask(() -> {
-                    IResultJS result = ResultWrapper.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context));
+                    IResultJS result = IResultJS.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context));
                     return result instanceof MultiResultJS ? (Object[]) result.getConvertedResult() : new Object[]{result.getConvertedResult()};
                 });
             } else {
-                return MethodResult.of(ResultWrapper.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context)).getResult());
+                return MethodResult.of(IResultJS.getLuaType(peripheralMethod.callback().call(block, side, arguments, computer, context)).getResult());
             }
         } catch (Exception e) {
             throw new LuaException(e.getMessage());
